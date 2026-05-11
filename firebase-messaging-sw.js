@@ -11,9 +11,9 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-    const notificationTitle = payload.notification.title || "Duit Masuk!";
+    const notificationTitle = payload.notification.title || "Ada Pesan Masuk!";
     const notificationOptions = {
-        body: payload.notification.body || "Cek saldo sekarang!",
+        body: payload.notification.body || "Seseorang mengirimkan pesan.",
         icon: payload.notification.image || 'https://cdn-icons-png.flaticon.com/512/3135/3135706.png',
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
