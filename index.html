@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notif Tester - Love Alarm</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        button {
+            background-color: #ff4b2b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            transform: scale(1.05);
+            background-color: #ff416c;
+        }
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
 
+    <div class="card">
+        <h2>Love Alarm Notifier 💖</h2>
+        <p>Klik tombol di bawah untuk simulasi duit masuk</p>
+        
+        <button onclick="requestAndShowNotif()">Kirim Notifikasi Duit</button>
+        
+        <div id="status" class="status">Status: Menunggu Izin...</div>
+    </div>
+
+    <script>
+        // Link direct audio dari MyInstants (Love Alarm)
+        const audioUrl = "https://www.myinstants.com/media/sounds/love-alarm-notification.mp3";
+        const audio = new Audio(audioUrl);
+
+        function requestAndShowNotif() {
+            // 1. Minta Izin Notifikasi
+            Notification.requestPermission().then(permission => {
+                const statusElement = document.getElementById('status');
+                
+                if (permission === "granted") {
+                    statusElement.innerText = "Status: Izin Diberikan! Mengirim notif...";
+                    showNotification();
+                } else if (permission === "denied") {
+                    statusElement.innerText = "Status: Izin Ditolak. Tolong reset izin di browser.";
+                } else {
+                    statusElement.innerText = "Status: Izin diperlukan untuk memutar suara.";
+                }
+            });
+        }
+
+        function showNotification() {
+            // 2. Mainkan Suara
+            // Browser mengizinkan play() karena dipicu oleh klik tombol (user interaction)
+            audio.play().catch(e => console.log("Gagal putar suara:", e));
+
+            // 3. Tampilkan Notifikasi Visual
+            const options = {
+                body: "Saldo masuk Rp 500.000! Segera cek rekening.",
+                icon: "https://cdn-icons-png.flaticon.com/512/3135/3135706.png", // Icon uang
+                vibrate: [200, 100, 200]
+            };
+
+            const n = new Notification("Duit Masuk! 💸", options);
+
+            // Tutup notif otomatis setelah 5 detik
+            setTimeout(n.close.bind(n), 5000);
+        }
+    </script>
+</body>
+</html>
