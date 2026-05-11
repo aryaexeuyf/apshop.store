@@ -3,177 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duit Notif Pro - v3</title>
+    <title>Duit Notif Pro v4</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="manifest" href="manifest.json">
 </head>
-<body class="bg-slate-900 text-white min-h-screen p-4">
+<body class="bg-slate-900 text-white min-h-screen p-4 font-sans">
 
     <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Sidebar Perangkat -->
-        <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 flex flex-col h-[600px]">
-            <h2 class="text-xl font-bold mb-4 flex items-center justify-between">
-                <span>📱 Devices</span>
-                <span id="myDeviceBadge" class="text-[10px] bg-emerald-500 px-2 py-1 rounded">Offline</span>
+        <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 flex flex-col h-[85vh]">
+            <h2 class="text-xl font-bold mb-4 flex items-center justify-between border-b border-slate-700 pb-2">
+                <span>📱 Perangkat</span>
             </h2>
             <div id="deviceList" class="flex-1 overflow-y-auto space-y-2">
-                <p class="text-slate-500 text-sm italic">Menunggu pendaftaran...</p>
+                <p class="text-slate-500 text-sm italic">Memuat daftar...</p>
             </div>
-            <button onclick="setupFCM()" class="mt-4 bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20">
-                🚀 DAFTARKAN HP INI
+            <button onclick="setupFCM()" class="mt-4 bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all shadow-lg">
+                🚀 DAFTARKAN PERANGKAT
             </button>
         </div>
 
         <!-- Chat Area -->
-        <div class="md:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col h-[600px]">
+        <div class="md:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col h-[85vh]">
             <div class="flex justify-between items-center border-b border-slate-700 pb-4 mb-4">
                 <div>
                     <h3 id="targetTitle" class="font-bold text-lg text-emerald-400">Global Chat</h3>
-                    <p id="targetStatus" class="text-xs text-slate-500">Pilih perangkat di kiri untuk private chat</p>
+                    <p id="targetStatus" class="text-[10px] text-slate-500 uppercase tracking-widest">Pesan akan dilihat semua orang</p>
                 </div>
                 <button onclick="resetTarget()" class="text-xs bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">Reset ke Global</button>
             </div>
 
             <!-- Icon Picker -->
             <div class="mb-4">
-                <p class="text-[10px] text-slate-500 mb-2 uppercase tracking-widest">Model Notifikasi</p>
-                <div class="flex gap-2 overflow-x-auto pb-2" id="iconPicker"></div>
+                <p class="text-[10px] text-slate-500 mb-2 uppercase">Pilih Logo Notif:</p>
+                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="iconPicker"></div>
             </div>
 
             <!-- Messages -->
-            <div id="chatBox" class="flex-1 overflow-y-auto mb-4 space-y-3 pr-2 border-b border-slate-700/50"></div>
+            <div id="chatBox" class="flex-1 overflow-y-auto mb-4 space-y-3 pr-2 flex flex-col"></div>
 
-            <!-- Input -->
+            <!-- Input Area -->
             <div class="flex gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-700">
                 <input type="text" id="msgInput" placeholder="Ketik pesan..." class="flex-1 bg-transparent border-none outline-none px-3 py-2 text-sm">
-                <button onclick="sendMessage()" class="bg-emerald-600 px-6 py-2 rounded-xl font-bold hover:bg-emerald-500">KIRIM</button>
+                <button onclick="sendMessage()" class="bg-emerald-600 px-6 py-2 rounded-xl font-bold hover:bg-emerald-500 transition-all">KIRIM</button>
             </div>
         </div>
     </div>
-    
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCgWhNLaeV8vE1bNLtU32JYafvxbtFXU-o",
-        authDomain: "ap-shop-b4e7e.firebaseapp.com",
-        projectId: "ap-shop-b4e7e",
-        storageBucket: "ap-shop-b4e7e.firebasestorage.app",
-        messagingSenderId: "370581375566",
-        appId: "1:370581375566:web:2dace12adc2e19686a511f"
-    };
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const messaging = getMessaging(app);
-    const audio = new Audio("https://www.myinstants.com/media/sounds/love-alarm-notification.mp3");
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgWhNLaeV8vE1bNLtU32JYafvxbtFXU-o",
+            authDomain: "ap-shop-b4e7e.firebaseapp.com",
+            projectId: "ap-shop-b4e7e",
+            storageBucket: "ap-shop-b4e7e.firebasestorage.app",
+            messagingSenderId: "370581375566",
+            appId: "1:370581375566:web:2dace12adc2e19686a511f"
+        };
 
-    // AMBIL IDENTITAS DARI STORAGE AGAR TIDAK TERTUKAR
-    let myToken = localStorage.getItem('my_fcm_token') || "";
-    let targetToken = "global";
-    let selectedIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135706.png";
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const messaging = getMessaging(app);
+        const audio = new Audio("https://www.myinstants.com/media/sounds/love-alarm-notification.mp3");
 
-    // Update Tampilan Jika Sudah Ada Token di Storage
-    if(myToken) document.getElementById('myDeviceBadge').innerText = "Terdaftar";
+        // IDENTITAS UNIK (FIX LOGIKA SAYA VS PENGIRIM)
+        let myToken = localStorage.getItem('my_token') || "";
+        let targetToken = "global";
+        let selectedIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135706.png";
 
-    window.setupFCM = async () => {
-        try {
-            const permission = await Notification.requestPermission();
-            if (permission !== 'granted') return alert("Izin Notifikasi Ditolak!");
+        // Render Icon Picker
+        const icons = [
+            "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
+            "https://cdn-icons-png.flaticon.com/512/5968/5968841.png",
+            "https://cdn-icons-png.flaticon.com/512/4436/4436481.png",
+            "https://cdn-icons-png.flaticon.com/512/733/733577.png",
+            "https://cdn-icons-png.flaticon.com/512/2504/2504923.png",
+            "https://cdn-icons-png.flaticon.com/512/3119/3119338.png",
+            "https://cdn-icons-png.flaticon.com/512/1828/1828884.png",
+            "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
+        ];
+        icons.forEach(url => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = "w-10 h-10 p-1 cursor-pointer rounded-lg border-2 border-transparent hover:bg-slate-700";
+            img.onclick = () => {
+                selectedIcon = url;
+                document.querySelectorAll('#iconPicker img').forEach(i => i.classList.remove('border-emerald-500'));
+                img.classList.add('border-emerald-500');
+            };
+            document.getElementById('iconPicker').appendChild(img);
+        });
 
-            const token = await getToken(messaging, { 
-                vapidKey: 'hUR8IbEahVd7KHFec-tPlTzf36cmCm75L9mNK0L0NDM' 
-            });
-            
-            if (token) {
-                myToken = token;
-                localStorage.setItem('my_fcm_token', token); // Simpan permanen di browser
-                
-                const deviceName = navigator.userAgent.match(/(Samsung|Infinix|Xiaomi|iPhone|Android|Windows)/i)?.[0] || "Unknown Device";
-                const finalName = deviceName + " (" + Math.floor(Math.random()*999) + ")";
+        // Register Service Worker Manual untuk cegah 404
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./firebase-messaging-sw.js')
+            .then(reg => console.log("SW Registered"))
+            .catch(err => console.log("SW Error: ", err));
+        }
 
-                await setDoc(doc(db, "devices", token), {
-                    name: finalName,
-                    token: token,
-                    status: "online",
-                    lastSeen: serverTimestamp()
+        // Fungsi Daftar
+        window.setupFCM = async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') return alert("Izin notif ditolak!");
+
+                const token = await getToken(messaging, { 
+                    vapidKey: 'hUR8IbEahVd7KHFec-tPlTzf36cmCm75L9mNK0L0NDM' 
                 });
                 
-                document.getElementById('myDeviceBadge').innerText = "Online: " + finalName;
-                location.reload(); // Refresh agar sinkron
-            }
-        } catch (e) { alert("Error: " + e.message); }
-    };
+                if (token) {
+                    myToken = token;
+                    localStorage.setItem('my_token', token);
+                    
+                    const name = navigator.userAgent.match(/(Samsung|Infinix|Xiaomi|Android|iPhone|Windows)/i)?.[0] || "Device";
+                    const finalName = name + "_" + Math.floor(Math.random()*999);
 
-    // LIST PERANGKAT - Memperbaiki Deteksi "Me"
-    onSnapshot(collection(db, "devices"), (snap) => {
-        const list = document.getElementById('deviceList');
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            const isMe = d.token === myToken; // Bandingkan token unik
-            
-            list.innerHTML += `
-                <div onclick="window.setTarget('${d.token}', '${d.name}')" 
-                     class="p-3 bg-slate-700/50 rounded-xl cursor-pointer hover:bg-slate-600 border-l-4 ${isMe ? 'border-emerald-500' : 'border-blue-500'} mb-2">
-                    <p class="font-bold text-sm text-white">${d.name} ${isMe ? '<span class="text-emerald-400">[ANDA]</span>' : ''}</p>
-                    <p class="text-[10px] text-slate-400">Status: Online</p>
-                </div>`;
-        });
-    });
-
-    window.setTarget = (token, name) => {
-        targetToken = token;
-        document.getElementById('targetTitle').innerText = "Chat ke: " + name;
-    };
-
-    window.sendMessage = async () => {
-        const val = document.getElementById('msgInput').value;
-        if(!val || !myToken) return alert("Daftarkan perangkat dulu!");
-
-        await addDoc(collection(db, "messages"), {
-            text: val,
-            target: targetToken,
-            sender: myToken, // Pengirim adalah token saya
-            icon: selectedIcon,
-            timestamp: serverTimestamp()
-        });
-        document.getElementById('msgInput').value = "";
-    };
-
-    // LIST PESAN - Memperbaiki Filter "Anda" vs "Perangkat Lain"
-    const qMsg = query(collection(db, "messages"), orderBy("timestamp", "asc"));
-    onSnapshot(qMsg, (snap) => {
-        const box = document.getElementById('chatBox');
-        box.innerHTML = "";
-        snap.forEach(doc => {
-            const m = doc.data();
-            // Tampilkan jika pesan ini Global, atau ditujukan ke saya, atau dikirim oleh saya
-            if(m.target === "global" || m.target === myToken || m.sender === myToken) {
-                const isMe = m.sender === myToken; // PENENTU UTAMA "ANDA"
-                
-                box.innerHTML += `
-                    <div class="flex ${isMe ? 'justify-end' : 'justify-start'} mb-2">
-                        <div class="${isMe ? 'bg-emerald-600' : 'bg-slate-700'} p-3 rounded-2xl max-w-[80%]">
-                            <div class="flex items-center gap-2 mb-1">
-                                <img src="${m.icon}" class="w-4 h-4">
-                                <span class="text-[10px] font-bold">${isMe ? 'SAYA' : 'PENGIRIM'}</span>
-                            </div>
-                            <p class="text-sm">${m.text}</p>
-                        </div>
-                    </div>`;
-                
-                // NOTIFIKASI PUSH VISUAL
-                if(!isMe && m.target === myToken && m.timestamp) {
-                    new Notification("Duit Masuk/Pesan!", { body: m.text, icon: m.icon });
-                    audio.play();
+                    await setDoc(doc(db, "devices", token), {
+                        name: finalName,
+                        token: token,
+                        lastSeen: serverTimestamp()
+                    });
+                    alert("Terdaftar sebagai: " + finalName);
+                    location.reload();
                 }
-            }
+            } catch (e) { console.error(e); }
+        };
+
+        // Listen Devices
+        onSnapshot(collection(db, "devices"), (snap) => {
+            const list = document.getElementById('deviceList');
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                const isMe = d.token === myToken;
+                list.innerHTML += `
+                    <div onclick="window.setTarget('${d.token}', '${d.name}')" 
+                         class="p-3 rounded-xl cursor-pointer transition-all border-l-4 mb-2 ${isMe ? 'bg-emerald-900/30 border-emerald-500' : 'bg-slate-700/50 border-blue-500 hover:bg-slate-600'}">
+                        <p class="font-bold text-sm">${d.name} ${isMe ? '(SAYA)' : ''}</p>
+                        <p class="text-[10px] opacity-50">Online</p>
+                    </div>`;
+            });
         });
-        box.scrollTop = box.scrollHeight;
-    });
-  </script>
+
+        window.setTarget = (token, name) => {
+            targetToken = token;
+            document.getElementById('targetTitle').innerText = "Pesan ke: " + name;
+            document.getElementById('targetStatus').innerText = "Mode: Chat Privat";
+        };
+
+        window.resetTarget = () => {
+            targetToken = "global";
+            document.getElementById('targetTitle').innerText = "Global Chat";
+            document.getElementById('targetStatus').innerText = "Mode: Chat Umum";
+        };
+
+        // Kirim Pesan
+        window.sendMessage = async () => {
+            const txt = document.getElementById('msgInput').value;
+            if(!txt || !myToken) return alert("Daftar dulu/Pesan kosong!");
+
+            await addDoc(collection(db, "messages"), {
+                text: txt,
+                sender: myToken,
+                target: targetToken,
+                icon: selectedIcon,
+                timestamp: serverTimestamp()
+            });
+            document.getElementById('msgInput').value = "";
+        };
+
+        // Listen Messages & Fix "Anda" vs "Pengirim"
+        const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+        onSnapshot(q, (snap) => {
+            const box = document.getElementById('chatBox');
+            box.innerHTML = "";
+            snap.forEach(doc => {
+                const m = doc.data();
+                const isMe = m.sender === myToken;
+                
+                // Filter: Tampilkan jika Global atau untuk saya atau dari saya
+                if(m.target === "global" || m.target === myToken || isMe) {
+                    const div = document.createElement('div');
+                    div.className = `flex mb-3 ${isMe ? 'justify-end' : 'justify-start'}`;
+                    div.innerHTML = `
+                        <div class="${isMe ? 'bg-emerald-600' : 'bg-slate-700'} p-3 rounded-2xl max-w-[85%] shadow-lg">
+                            <div class="flex items-center gap-2 mb-1 border-b border-white/10 pb-1">
+                                <img src="${m.icon}" class="w-4 h-4">
+                                <span class="text-[9px] font-black uppercase">${isMe ? 'SAYA' : 'PENGIRIM'}</span>
+                            </div>
+                            <p class="text-sm pt-1">${m.text}</p>
+                        </div>`;
+                    box.appendChild(div);
+
+                    // Bunyi & Notif jika pesan dari orang lain
+                    if(!isMe && m.timestamp) {
+                        audio.play().catch(()=>{});
+                        if (m.target === myToken) {
+                            new Notification("Pesan Privat!", { body: m.text, icon: m.icon });
+                        }
+                    }
+                }
+            });
+            box.scrollTop = box.scrollHeight;
+        });
+
+    </script>
 </body>
 </html>
