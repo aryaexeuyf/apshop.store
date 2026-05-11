@@ -10,14 +10,12 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Menangani notifikasi saat aplikasi di background
 messaging.onBackgroundMessage((payload) => {
-    console.log('Background Message:', payload);
-    const notificationTitle = payload.notification.title;
+    const notificationTitle = payload.notification.title || "Ada Pesan Baru!";
     const notificationOptions = {
-        body: payload.notification.body,
+        body: payload.notification.body || "Cek aplikasi sekarang",
         icon: payload.notification.image || 'https://cdn-icons-png.flaticon.com/512/3135/3135706.png',
-        vibrate: [200, 100, 200]
     };
+
     self.registration.showNotification(notificationTitle, notificationOptions);
 });
