@@ -3,44 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Multi-Device Chat & Notif</title>
+    <title>Duit Notif Pro - v3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
 </head>
-<body class="bg-slate-900 text-white min-h-screen p-4 font-sans">
+<body class="bg-slate-900 text-white min-h-screen p-4">
 
-    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 h-[600px] flex flex-col">
-            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-                <span class="w-3 h-3 bg-green-500 rounded-full"></span> Online Devices
+    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Sidebar Perangkat -->
+        <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 flex flex-col h-[600px]">
+            <h2 class="text-xl font-bold mb-4 flex items-center justify-between">
+                <span>📱 Devices</span>
+                <span id="myDeviceBadge" class="text-[10px] bg-emerald-500 px-2 py-1 rounded">Offline</span>
             </h2>
-            <div id="deviceList" class="flex-1 overflow-y-auto space-y-2 text-sm text-slate-400">
-                Loading devices...
+            <div id="deviceList" class="flex-1 overflow-y-auto space-y-2">
+                <p class="text-slate-500 text-sm italic">Menunggu pendaftaran...</p>
             </div>
-            <button onclick="setupFCM()" class="mt-4 bg-blue-600 hover:bg-blue-500 py-2 rounded-lg font-bold transition-all">
-                Daftarkan Perangkat Ini
+            <button onclick="setupFCM()" class="mt-4 bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20">
+                🚀 DAFTARKAN HP INI
             </button>
         </div>
 
+        <!-- Chat Area -->
         <div class="md:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col h-[600px]">
-            <div id="chatHeader" class="border-b border-slate-700 pb-4 mb-4">
-                <h3 class="font-bold text-lg">Global Chat / Notif</h3>
-                <p class="text-xs text-slate-500" id="targetInfo">Target: Everyone (Global)</p>
+            <div class="flex justify-between items-center border-b border-slate-700 pb-4 mb-4">
+                <div>
+                    <h3 id="targetTitle" class="font-bold text-lg text-emerald-400">Global Chat</h3>
+                    <p id="targetStatus" class="text-xs text-slate-500">Pilih perangkat di kiri untuk private chat</p>
+                </div>
+                <button onclick="resetTarget()" class="text-xs bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">Reset ke Global</button>
             </div>
 
+            <!-- Icon Picker -->
             <div class="mb-4">
-                <p class="text-xs text-slate-400 mb-2 uppercase">Pilih Logo Notifikasi:</p>
-                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar" id="iconPicker"></div>
+                <p class="text-[10px] text-slate-500 mb-2 uppercase tracking-widest">Model Notifikasi</p>
+                <div class="flex gap-2 overflow-x-auto pb-2" id="iconPicker"></div>
             </div>
 
-            <div id="chatBox" class="flex-1 overflow-y-auto mb-4 space-y-3 pr-2 scrollbar-hide text-sm">
-                <div class="bg-slate-700/50 p-3 rounded-lg">Sistem: Selamat datang di Duit Notif v2!</div>
-            </div>
+            <!-- Messages -->
+            <div id="chatBox" class="flex-1 overflow-y-auto mb-4 space-y-3 pr-2 border-b border-slate-700/50"></div>
 
-            <div class="flex gap-2 bg-slate-900 p-2 rounded-xl">
-                <input type="text" id="msgInput" placeholder="Tulis pesan..." class="flex-1 bg-transparent border-none outline-none px-2 py-2">
-                <button onclick="sendMessage()" class="bg-emerald-600 px-4 py-2 rounded-lg font-bold hover:bg-emerald-500 transition-all">KIRIM</button>
+            <!-- Input -->
+            <div class="flex gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-700">
+                <input type="text" id="msgInput" placeholder="Ketik pesan..." class="flex-1 bg-transparent border-none outline-none px-3 py-2 text-sm">
+                <button onclick="sendMessage()" class="bg-emerald-600 px-6 py-2 rounded-xl font-bold hover:bg-emerald-500">KIRIM</button>
             </div>
         </div>
     </div>
@@ -64,120 +70,149 @@
         const messaging = getMessaging(app);
         const audio = new Audio("https://www.myinstants.com/media/sounds/love-alarm-notification.mp3");
 
-        let selectedIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135706.png";
-        let targetDevice = "global";
         let myToken = "";
+        let targetToken = "global";
+        let selectedIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135706.png";
 
-        // 1. Icon Picker Logic (10 Model)
-        const icons = [
-            "https://cdn-icons-png.flaticon.com/512/3135/3135706.png", // Duit
-            "https://cdn-icons-png.flaticon.com/512/1828/1828884.png", // Star
-            "https://cdn-icons-png.flaticon.com/512/733/733577.png",   // WhatsApp
-            "https://cdn-icons-png.flaticon.com/512/5968/5968841.png", // Bell
-            "https://cdn-icons-png.flaticon.com/512/2504/2504923.png", // Love
-            "https://cdn-icons-png.flaticon.com/512/3119/3119338.png", // Warning
-            "https://cdn-icons-png.flaticon.com/512/4436/4436481.png", // Fire
-            "https://cdn-icons-png.flaticon.com/512/1077/1077012.png", // User
-            "https://cdn-icons-png.flaticon.com/512/1827/1827379.png", // Chat
-            "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"  // Robot
-        ];
+        // Deteksi Nama Perangkat (Infinix, Samsung, Chrome, dll)
+        function getDeviceName() {
+            const ua = navigator.userAgent;
+            if (ua.includes("Samsung")) return "Samsung Device";
+            if (ua.includes("Infinix")) return "Infinix Device";
+            if (ua.includes("Xiaomi")) return "Xiaomi Device";
+            if (ua.includes("iPhone")) return "iPhone";
+            if (ua.includes("Android")) return "Android Phone";
+            return "PC/Laptop Browser";
+        }
 
-        const picker = document.getElementById('iconPicker');
-        icons.forEach(url => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.className = "w-10 h-10 p-1 cursor-pointer rounded-lg border-2 border-transparent hover:border-emerald-500";
-            img.onclick = () => {
-                selectedIcon = url;
-                Array.from(picker.children).forEach(c => c.classList.remove('border-emerald-500'));
-                img.classList.add('border-emerald-500');
-            };
-            picker.appendChild(img);
-        });
-
-        // 2. Registrasi Device & Token ke Firestore
+        // Setup Notif & Token
         window.setupFCM = async () => {
             try {
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
-                    const token = await getToken(messaging, { vapidKey: 'hUR8IbEahVd7KHFec-tPlTzf36cmCm75L9mNK0L0NDM' });
+                    const token = await getToken(messaging, { 
+                        vapidKey: 'hUR8IbEahVd7KHFec-tPlTzf36cmCm75L9mNK0L0NDM' 
+                    });
+                    
                     myToken = token;
-                    const deviceName = navigator.userAgent.split(' ')[0] + "_" + Math.floor(Math.random()*1000);
+                    const name = getDeviceName() + " (" + Math.floor(Math.random()*99) + ")";
                     
                     await setDoc(doc(db, "devices", token), {
-                        name: deviceName,
+                        name: name,
                         token: token,
                         lastSeen: serverTimestamp()
                     });
-                    alert("Perangkat Terdaftar: " + deviceName);
+                    
+                    document.getElementById('myDeviceBadge').innerText = "Online: " + name;
+                    alert("Berhasil Terdaftar!");
                 }
-            } catch (err) { console.error(err); }
+            } catch (e) { console.error(e); }
         };
 
-        // 3. Listen Daftar Perangkat
+        // Render Icons
+        const iconList = [
+            "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
+            "https://cdn-icons-png.flaticon.com/512/5968/5968841.png",
+            "https://cdn-icons-png.flaticon.com/512/4436/4436481.png",
+            "https://cdn-icons-png.flaticon.com/512/1827/1827379.png",
+            "https://cdn-icons-png.flaticon.com/512/2504/2504923.png",
+            "https://cdn-icons-png.flaticon.com/512/3119/3119338.png",
+            "https://cdn-icons-png.flaticon.com/512/733/733577.png",
+            "https://cdn-icons-png.flaticon.com/512/1828/1828884.png",
+            "https://cdn-icons-png.flaticon.com/512/1077/1077012.png",
+            "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
+        ];
+        iconList.forEach(url => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = "w-8 h-8 cursor-pointer rounded border-2 border-transparent p-1 hover:bg-slate-700";
+            img.onclick = () => {
+                selectedIcon = url;
+                document.querySelectorAll('#iconPicker img').forEach(i => i.classList.remove('border-emerald-500'));
+                img.classList.add('border-emerald-500');
+            };
+            document.getElementById('iconPicker').appendChild(img);
+        });
+
+        // Listen Devices
         onSnapshot(collection(db, "devices"), (snap) => {
             const list = document.getElementById('deviceList');
-            list.innerHTML = `<div onclick="setTarget('global', 'Everyone')" class="p-3 bg-slate-700 rounded-lg cursor-pointer hover:bg-slate-600 mb-2 border-l-4 border-emerald-500">Global Chat</div>`;
+            list.innerHTML = "";
             snap.forEach(doc => {
                 const d = doc.data();
-                if(d.token === myToken) return;
+                const isMe = d.token === myToken;
                 list.innerHTML += `
-                    <div onclick="setTarget('${d.token}', '${d.name}')" class="p-3 bg-slate-700 rounded-lg cursor-pointer hover:bg-slate-600 border-l-4 border-blue-500">
-                        ${d.name}
+                    <div onclick="window.setTarget('${d.token}', '${d.name}')" 
+                         class="p-3 bg-slate-700/50 rounded-xl cursor-pointer hover:bg-slate-600 border-l-4 ${isMe ? 'border-emerald-500' : 'border-blue-500'}">
+                        <p class="font-bold text-sm text-white">${d.name} ${isMe ? '(Me)' : ''}</p>
+                        <p class="text-[10px] text-slate-400 truncate">${d.token.substring(0,20)}...</p>
                     </div>`;
             });
         });
 
         window.setTarget = (token, name) => {
-            targetDevice = token;
-            document.getElementById('targetInfo').innerText = "Target: " + name;
+            targetToken = token;
+            document.getElementById('targetTitle').innerText = "Chat ke: " + name;
         };
 
-        // 4. Kirim Pesan & Notif
-        window.sendMessage = async () => {
-            const msg = document.getElementById('msgInput').value;
-            if(!msg) return;
+        window.resetTarget = () => {
+            targetToken = "global";
+            document.getElementById('targetTitle').innerText = "Global Chat";
+        };
 
+        // Send Message
+        window.sendMessage = async () => {
+            const val = document.getElementById('msgInput').value;
+            if(!val) return;
             await addDoc(collection(db, "messages"), {
-                text: msg,
-                sender: myToken || "Guest",
-                target: targetDevice,
+                text: val,
+                target: targetToken,
+                sender: myToken,
                 icon: selectedIcon,
                 timestamp: serverTimestamp()
             });
-
-            // Note: Untuk kirim notifikasi FCM sungguhan ke target background, 
-            // idealnya menggunakan Firebase Cloud Functions (Server-side).
-            // Di sisi client kita hanya simpan data, biar sistem "onMessage" yang handle.
-            
             document.getElementById('msgInput').value = "";
         };
 
-        // 5. Listen Chat Real-time & Trigger Sound
-        const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
-        onSnapshot(q, (snap) => {
+        // Listen Messages & Notif Pop-up
+        const qMsg = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+        onSnapshot(qMsg, (snap) => {
             const box = document.getElementById('chatBox');
             box.innerHTML = "";
             snap.forEach(doc => {
                 const m = doc.data();
-                // Filter: Tampilkan jika global atau milik saya (privat)
                 if(m.target === "global" || m.target === myToken || m.sender === myToken) {
                     const isMe = m.sender === myToken;
                     box.innerHTML += `
-                        <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-                            <div class="${isMe ? 'bg-emerald-700' : 'bg-slate-700'} p-2 rounded-lg max-w-[80%] flex items-center gap-2">
-                                <img src="${m.icon}" class="w-5 h-5">
-                                <span>${m.text}</span>
+                        <div class="flex ${isMe ? 'justify-end' : 'justify-start'} animate-fade-in">
+                            <div class="${isMe ? 'bg-emerald-600' : 'bg-slate-700'} p-3 rounded-2xl max-w-[80%] shadow-md">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <img src="${m.icon}" class="w-4 h-4">
+                                    <span class="text-[10px] opacity-70">${isMe ? 'Anda' : 'Perangkat Lain'}</span>
+                                </div>
+                                <p class="text-sm">${m.text}</p>
                             </div>
                         </div>`;
                     
-                    // Mainkan suara jika ada pesan baru masuk & bukan dari saya
-                    if(!isMe && m.timestamp) {
+                    // Trigger Notifikasi Visual Browser jika pesan untuk kita
+                    if(!isMe && m.target === myToken) {
+                        new Notification("Pesan Privat Baru!", { body: m.text, icon: m.icon });
                         audio.play();
+                    } else if (!isMe && m.target === "global") {
+                        audio.play(); // Suara saja untuk global agar tidak spam notif
                     }
                 }
             });
             box.scrollTop = box.scrollHeight;
+        });
+
+        // Foreground Listener (Saat web terbuka)
+        onMessage(messaging, (payload) => {
+            console.log('Message received. ', payload);
+            new Notification(payload.notification.title, {
+                body: payload.notification.body,
+                icon: payload.notification.image
+            });
         });
 
     </script>
