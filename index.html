@@ -3,96 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notif Tester - Love Alarm</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f2f5;
-            margin: 0;
-        }
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        button {
-            background-color: #ff4b2b;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: transform 0.2s;
-            margin-top: 10px;
-        }
-        button:hover {
-            transform: scale(1.05);
-            background-color: #ff416c;
-        }
-        .status {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #666;
-        }
-    </style>
+    <title>Duit Tracker Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
 </head>
-<body>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-6">
 
-    <div class="card">
-        <h2>Love Alarm Notifier 💖</h2>
-        <p>Klik tombol di bawah untuk simulasi duit masuk</p>
-        
-        <button onclick="requestAndShowNotif()">Kirim Notifikasi Duit</button>
-        
-        <div id="status" class="status">Status: Menunggu Izin...</div>
+    <div class="max-w-md w-full bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-700 text-center">
+        <div class="mb-6">
+            <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                <span class="text-3xl">💰</span>
+            </div>
+            <h1 class="text-2xl font-bold italic">Duit Notification</h1>
+            <p class="text-slate-400 text-sm">Simulasi Notif Masuk Otomatis</p>
+        </div>
+
+        <!-- Timer Display -->
+        <div class="bg-slate-900 rounded-2xl p-6 mb-6 border border-slate-700">
+            <div id="timerDisplay" class="text-5xl font-mono font-bold text-emerald-400">00:00</div>
+            <p class="text-xs text-slate-500 mt-2 uppercase tracking-widest">Countdown ke Notifikasi</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex gap-2">
+                <input id="timerInput" type="number" placeholder="Detik" class="w-full bg-slate-700 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
+                <button onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-3 rounded-xl font-bold transition-all active:scale-95">SET</button>
+            </div>
+            
+            <button onclick="requestPermission()" id="btnNotif" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-xl font-medium transition-all">
+                Aktifkan Izin Notifikasi
+            </button>
+        </div>
+
+        <p id="statusTxt" class="text-xs mt-6 text-slate-500 italic">Pastikan browser mengizinkan notifikasi & suara.</p>
     </div>
 
     <script>
-        // Link direct audio dari MyInstants (Love Alarm)
-        const audioUrl = "https://www.myinstants.com/media/sounds/love-alarm-notification.mp3";
-        const audio = new Audio(audioUrl);
+        let countdown;
+        const audio = new Audio("https://www.myinstants.com/media/sounds/love-alarm-notification.mp3");
 
-        function requestAndShowNotif() {
-            // 1. Minta Izin Notifikasi
-            Notification.requestPermission().then(permission => {
-                const statusElement = document.getElementById('status');
-                
-                if (permission === "granted") {
-                    statusElement.innerText = "Status: Izin Diberikan! Mengirim notif...";
-                    showNotification();
-                } else if (permission === "denied") {
-                    statusElement.innerText = "Status: Izin Ditolak. Tolong reset izin di browser.";
-                } else {
-                    statusElement.innerText = "Status: Izin diperlukan untuk memutar suara.";
-                }
-            });
+        // Daftar Service Worker agar bisa jalan di background (Mobile Support)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
         }
 
-        function showNotification() {
-            // 2. Mainkan Suara
-            // Browser mengizinkan play() karena dipicu oleh klik tombol (user interaction)
-            audio.play().catch(e => console.log("Gagal putar suara:", e));
+        async function requestPermission() {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                document.getElementById('btnNotif').innerText = "✅ Izin Aktif";
+                document.getElementById('btnNotif').classList.replace('bg-slate-700', 'bg-blue-600');
+                // Pancing suara sekali agar browser mobile memberi izin audio
+                audio.play().then(() => audio.pause());
+            }
+        }
 
-            // 3. Tampilkan Notifikasi Visual
-            const options = {
-                body: "Saldo masuk Rp 500.000! Segera cek rekening.",
-                icon: "https://cdn-icons-png.flaticon.com/512/3135/3135706.png", // Icon uang
-                vibrate: [200, 100, 200]
-            };
+        function startTimer() {
+            const sec = document.getElementById('timerInput').value || 5;
+            let timeLeft = parseInt(sec);
+            
+            clearInterval(countdown);
+            updateDisplay(timeLeft);
 
-            const n = new Notification("Duit Masuk! 💸", options);
+            countdown = setInterval(() => {
+                timeLeft--;
+                updateDisplay(timeLeft);
 
-            // Tutup notif otomatis setelah 5 detik
-            setTimeout(n.close.bind(n), 5000);
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    sendDuitNotif();
+                }
+            }, 1000);
+        }
+
+        function updateDisplay(time) {
+            const display = document.getElementById('timerDisplay');
+            const m = Math.floor(time / 60);
+            const s = time % 60;
+            display.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function sendDuitNotif() {
+            // Putar Suara
+            audio.play().catch(e => console.log("User interaction required"));
+
+            // Kirim Notif
+            if (Notification.permission === 'granted') {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification("💸 DUIT MASUK!", {
+                        body: "Saldo Rp 1.500.000 mendarat di rekening!",
+                        icon: "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
+                        vibrate: [200, 100, 200, 100, 200],
+                        tag: 'duit-masuk'
+                    });
+                });
+            }
         }
     </script>
 </body>
