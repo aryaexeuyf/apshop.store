@@ -3,101 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duit Tracker Pro</title>
+    <title>Firebase Multi-Device Chat & Notif</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-6">
+<body class="bg-slate-900 text-white min-h-screen p-4 font-sans">
 
-    <div class="max-w-md w-full bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-700 text-center">
-        <div class="mb-6">
-            <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
-                <span class="text-3xl">💰</span>
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 h-[600px] flex flex-col">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 bg-green-500 rounded-full"></span> Online Devices
+            </h2>
+            <div id="deviceList" class="flex-1 overflow-y-auto space-y-2 text-sm text-slate-400">
+                Loading devices...
             </div>
-            <h1 class="text-2xl font-bold italic">Duit Notification</h1>
-            <p class="text-slate-400 text-sm">Simulasi Notif Masuk Otomatis</p>
-        </div>
-
-        <!-- Timer Display -->
-        <div class="bg-slate-900 rounded-2xl p-6 mb-6 border border-slate-700">
-            <div id="timerDisplay" class="text-5xl font-mono font-bold text-emerald-400">00:00</div>
-            <p class="text-xs text-slate-500 mt-2 uppercase tracking-widest">Countdown ke Notifikasi</p>
-        </div>
-
-        <div class="space-y-4">
-            <div class="flex gap-2">
-                <input id="timerInput" type="number" placeholder="Detik" class="w-full bg-slate-700 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
-                <button onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-3 rounded-xl font-bold transition-all active:scale-95">SET</button>
-            </div>
-            
-            <button onclick="requestPermission()" id="btnNotif" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-xl font-medium transition-all">
-                Aktifkan Izin Notifikasi
+            <button onclick="setupFCM()" class="mt-4 bg-blue-600 hover:bg-blue-500 py-2 rounded-lg font-bold transition-all">
+                Daftarkan Perangkat Ini
             </button>
         </div>
 
-        <p id="statusTxt" class="text-xs mt-6 text-slate-500 italic">Pastikan browser mengizinkan notifikasi & suara.</p>
+        <div class="md:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col h-[600px]">
+            <div id="chatHeader" class="border-b border-slate-700 pb-4 mb-4">
+                <h3 class="font-bold text-lg">Global Chat / Notif</h3>
+                <p class="text-xs text-slate-500" id="targetInfo">Target: Everyone (Global)</p>
+            </div>
+
+            <div class="mb-4">
+                <p class="text-xs text-slate-400 mb-2 uppercase">Pilih Logo Notifikasi:</p>
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar" id="iconPicker"></div>
+            </div>
+
+            <div id="chatBox" class="flex-1 overflow-y-auto mb-4 space-y-3 pr-2 scrollbar-hide text-sm">
+                <div class="bg-slate-700/50 p-3 rounded-lg">Sistem: Selamat datang di Duit Notif v2!</div>
+            </div>
+
+            <div class="flex gap-2 bg-slate-900 p-2 rounded-xl">
+                <input type="text" id="msgInput" placeholder="Tulis pesan..." class="flex-1 bg-transparent border-none outline-none px-2 py-2">
+                <button onclick="sendMessage()" class="bg-emerald-600 px-4 py-2 rounded-lg font-bold hover:bg-emerald-500 transition-all">KIRIM</button>
+            </div>
+        </div>
     </div>
 
-    <script>
-        let countdown;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgWhNLaeV8vE1bNLtU32JYafvxbtFXU-o",
+            authDomain: "ap-shop-b4e7e.firebaseapp.com",
+            projectId: "ap-shop-b4e7e",
+            storageBucket: "ap-shop-b4e7e.firebasestorage.app",
+            messagingSenderId: "370581375566",
+            appId: "1:370581375566:web:2dace12adc2e19686a511f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const messaging = getMessaging(app);
         const audio = new Audio("https://www.myinstants.com/media/sounds/love-alarm-notification.mp3");
 
-        // Daftar Service Worker agar bisa jalan di background (Mobile Support)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        let selectedIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135706.png";
+        let targetDevice = "global";
+        let myToken = "";
 
-        async function requestPermission() {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                document.getElementById('btnNotif').innerText = "✅ Izin Aktif";
-                document.getElementById('btnNotif').classList.replace('bg-slate-700', 'bg-blue-600');
-                // Pancing suara sekali agar browser mobile memberi izin audio
-                audio.play().then(() => audio.pause());
-            }
-        }
+        // 1. Icon Picker Logic (10 Model)
+        const icons = [
+            "https://cdn-icons-png.flaticon.com/512/3135/3135706.png", // Duit
+            "https://cdn-icons-png.flaticon.com/512/1828/1828884.png", // Star
+            "https://cdn-icons-png.flaticon.com/512/733/733577.png",   // WhatsApp
+            "https://cdn-icons-png.flaticon.com/512/5968/5968841.png", // Bell
+            "https://cdn-icons-png.flaticon.com/512/2504/2504923.png", // Love
+            "https://cdn-icons-png.flaticon.com/512/3119/3119338.png", // Warning
+            "https://cdn-icons-png.flaticon.com/512/4436/4436481.png", // Fire
+            "https://cdn-icons-png.flaticon.com/512/1077/1077012.png", // User
+            "https://cdn-icons-png.flaticon.com/512/1827/1827379.png", // Chat
+            "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"  // Robot
+        ];
 
-        function startTimer() {
-            const sec = document.getElementById('timerInput').value || 5;
-            let timeLeft = parseInt(sec);
-            
-            clearInterval(countdown);
-            updateDisplay(timeLeft);
+        const picker = document.getElementById('iconPicker');
+        icons.forEach(url => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = "w-10 h-10 p-1 cursor-pointer rounded-lg border-2 border-transparent hover:border-emerald-500";
+            img.onclick = () => {
+                selectedIcon = url;
+                Array.from(picker.children).forEach(c => c.classList.remove('border-emerald-500'));
+                img.classList.add('border-emerald-500');
+            };
+            picker.appendChild(img);
+        });
 
-            countdown = setInterval(() => {
-                timeLeft--;
-                updateDisplay(timeLeft);
-
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    sendDuitNotif();
-                }
-            }, 1000);
-        }
-
-        function updateDisplay(time) {
-            const display = document.getElementById('timerDisplay');
-            const m = Math.floor(time / 60);
-            const s = time % 60;
-            display.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function sendDuitNotif() {
-            // Putar Suara
-            audio.play().catch(e => console.log("User interaction required"));
-
-            // Kirim Notif
-            if (Notification.permission === 'granted') {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification("💸 DUIT MASUK!", {
-                        body: "Saldo Rp 1.500.000 mendarat di rekening!",
-                        icon: "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
-                        vibrate: [200, 100, 200, 100, 200],
-                        tag: 'duit-masuk'
+        // 2. Registrasi Device & Token ke Firestore
+        window.setupFCM = async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    const token = await getToken(messaging, { vapidKey: 'YOUR_VAPID_KEY_HERE' });
+                    myToken = token;
+                    const deviceName = navigator.userAgent.split(' ')[0] + "_" + Math.floor(Math.random()*1000);
+                    
+                    await setDoc(doc(db, "devices", token), {
+                        name: deviceName,
+                        token: token,
+                        lastSeen: serverTimestamp()
                     });
-                });
-            }
-        }
+                    alert("Perangkat Terdaftar: " + deviceName);
+                }
+            } catch (err) { console.error(err); }
+        };
+
+        // 3. Listen Daftar Perangkat
+        onSnapshot(collection(db, "devices"), (snap) => {
+            const list = document.getElementById('deviceList');
+            list.innerHTML = `<div onclick="setTarget('global', 'Everyone')" class="p-3 bg-slate-700 rounded-lg cursor-pointer hover:bg-slate-600 mb-2 border-l-4 border-emerald-500">Global Chat</div>`;
+            snap.forEach(doc => {
+                const d = doc.data();
+                if(d.token === myToken) return;
+                list.innerHTML += `
+                    <div onclick="setTarget('${d.token}', '${d.name}')" class="p-3 bg-slate-700 rounded-lg cursor-pointer hover:bg-slate-600 border-l-4 border-blue-500">
+                        ${d.name}
+                    </div>`;
+            });
+        });
+
+        window.setTarget = (token, name) => {
+            targetDevice = token;
+            document.getElementById('targetInfo').innerText = "Target: " + name;
+        };
+
+        // 4. Kirim Pesan & Notif
+        window.sendMessage = async () => {
+            const msg = document.getElementById('msgInput').value;
+            if(!msg) return;
+
+            await addDoc(collection(db, "messages"), {
+                text: msg,
+                sender: myToken || "Guest",
+                target: targetDevice,
+                icon: selectedIcon,
+                timestamp: serverTimestamp()
+            });
+
+            // Note: Untuk kirim notifikasi FCM sungguhan ke target background, 
+            // idealnya menggunakan Firebase Cloud Functions (Server-side).
+            // Di sisi client kita hanya simpan data, biar sistem "onMessage" yang handle.
+            
+            document.getElementById('msgInput').value = "";
+        };
+
+        // 5. Listen Chat Real-time & Trigger Sound
+        const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+        onSnapshot(q, (snap) => {
+            const box = document.getElementById('chatBox');
+            box.innerHTML = "";
+            snap.forEach(doc => {
+                const m = doc.data();
+                // Filter: Tampilkan jika global atau milik saya (privat)
+                if(m.target === "global" || m.target === myToken || m.sender === myToken) {
+                    const isMe = m.sender === myToken;
+                    box.innerHTML += `
+                        <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
+                            <div class="${isMe ? 'bg-emerald-700' : 'bg-slate-700'} p-2 rounded-lg max-w-[80%] flex items-center gap-2">
+                                <img src="${m.icon}" class="w-5 h-5">
+                                <span>${m.text}</span>
+                            </div>
+                        </div>`;
+                    
+                    // Mainkan suara jika ada pesan baru masuk & bukan dari saya
+                    if(!isMe && m.timestamp) {
+                        audio.play();
+                    }
+                }
+            });
+            box.scrollTop = box.scrollHeight;
+        });
+
     </script>
 </body>
 </html>
