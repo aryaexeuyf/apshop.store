@@ -1,214 +1,112 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duit Notif Pro v4</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APSHOP STORE</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#111;
+    color:white;
+}
+
+nav{
+    background:#00ff88;
+    padding:15px;
+    text-align:center;
+}
+
+nav a{
+    color:black;
+    text-decoration:none;
+    margin:10px;
+    font-weight:bold;
+}
+
+.page{
+    display:none;
+    padding:40px;
+    text-align:center;
+}
+
+.active{
+    display:block;
+}
+
+.box{
+    background:#1e1e1e;
+    padding:20px;
+    border-radius:15px;
+    max-width:500px;
+    margin:auto;
+}
+</style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen p-4 font-sans">
+<body>
 
-    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Sidebar Perangkat -->
-        <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 flex flex-col h-[85vh]">
-            <h2 class="text-xl font-bold mb-4 flex items-center justify-between border-b border-slate-700 pb-2">
-                <span>📱 Perangkat</span>
-            </h2>
-            <div id="deviceList" class="flex-1 overflow-y-auto space-y-2">
-                <p class="text-slate-500 text-sm italic">Memuat daftar...</p>
-            </div>
-            <button onclick="setupFCM()" class="mt-4 bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all shadow-lg">
-                🚀 DAFTARKAN PERANGKAT
-            </button>
-        </div>
+<nav>
+    <a href="#home">Home</a>
+    <a href="#produk">Produk</a>
+    <a href="#tentang">Tentang</a>
+    <a href="#kontak">Kontak</a>
+</nav>
 
-        <!-- Chat Area -->
-        <div class="md:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col h-[85vh]">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-4 mb-4">
-                <div>
-                    <h3 id="targetTitle" class="font-bold text-lg text-emerald-400">Global Chat</h3>
-                    <p id="targetStatus" class="text-[10px] text-slate-500 uppercase tracking-widest">Pesan akan dilihat semua orang</p>
-                </div>
-                <button onclick="resetTarget()" class="text-xs bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">Reset ke Global</button>
-            </div>
-
-            <!-- Icon Picker -->
-            <div class="mb-4">
-                <p class="text-[10px] text-slate-500 mb-2 uppercase">Pilih Logo Notif:</p>
-                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="iconPicker"></div>
-            </div>
-
-            <!-- Messages -->
-            <div id="chatBox" class="flex-1 overflow-y-auto mb-4 space-y-3 pr-2 flex flex-col"></div>
-
-            <!-- Input Area -->
-            <div class="flex gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-700">
-                <input type="text" id="msgInput" placeholder="Ketik pesan..." class="flex-1 bg-transparent border-none outline-none px-3 py-2 text-sm">
-                <button onclick="sendMessage()" class="bg-emerald-600 px-6 py-2 rounded-xl font-bold hover:bg-emerald-500 transition-all">KIRIM</button>
-            </div>
-        </div>
+<!-- HOME -->
+<div id="home" class="page">
+    <div class="box">
+        <h1>🛒 APSHOP STORE</h1>
+        <p>Toko gadget random paling gacor jancok 😹</p>
     </div>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!-- PRODUK -->
+<div id="produk" class="page">
+    <div class="box">
+        <h1>📦 Produk</h1>
+        <p>🔦 Senter LED - 20rb</p>
+        <p>🔊 Speaker Mini - 35rb</p>
+        <p>📱 Kabel Type C - 10rb</p>
+    </div>
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCgWhNLaeV8vE1bNLtU32JYafvxbtFXU-o",
-            authDomain: "ap-shop-b4e7e.firebaseapp.com",
-            projectId: "ap-shop-b4e7e",
-            storageBucket: "ap-shop-b4e7e.firebasestorage.app",
-            messagingSenderId: "370581375566",
-            appId: "1:370581375566:web:2dace12adc2e19686a511f"
-        };
+<!-- TENTANG -->
+<div id="tentang" class="page">
+    <div class="box">
+        <h1>👤 Tentang</h1>
+        <p>APSHOP yaiku toko online isi elektronik, gadget, dll.</p>
+    </div>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const messaging = getMessaging(app);
-        const audio = new Audio("https://www.myinstants.com/media/sounds/love-alarm-notification.mp3");
+<!-- KONTAK -->
+<div id="kontak" class="page">
+    <div class="box">
+        <h1>📞 Kontak</h1>
+        <p>WA: 08xxxxxxxx</p>
+        <p>TikTok: APSHOP</p>
+    </div>
+</div>
 
-        // IDENTITAS UNIK (FIX LOGIKA SAYA VS PENGIRIM)
-        let myToken = localStorage.getItem('my_token') || "";
-        let targetToken = "global";
-        let selectedIcon = "https://cdn-icons-png.flaticon.com/512/3135/3135706.png";
+<script>
+function showPage() {
+    let hash = window.location.hash || "#home";
 
-        // Render Icon Picker
-        const icons = [
-            "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
-            "https://cdn-icons-png.flaticon.com/512/5968/5968841.png",
-            "https://cdn-icons-png.flaticon.com/512/4436/4436481.png",
-            "https://cdn-icons-png.flaticon.com/512/733/733577.png",
-            "https://cdn-icons-png.flaticon.com/512/2504/2504923.png",
-            "https://cdn-icons-png.flaticon.com/512/3119/3119338.png",
-            "https://cdn-icons-png.flaticon.com/512/1828/1828884.png",
-            "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
-        ];
-        icons.forEach(url => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.className = "w-10 h-10 p-1 cursor-pointer rounded-lg border-2 border-transparent hover:bg-slate-700";
-            img.onclick = () => {
-                selectedIcon = url;
-                document.querySelectorAll('#iconPicker img').forEach(i => i.classList.remove('border-emerald-500'));
-                img.classList.add('border-emerald-500');
-            };
-            document.getElementById('iconPicker').appendChild(img);
-        });
+    document.querySelectorAll(".page").forEach(page=>{
+        page.classList.remove("active");
+    });
 
-        // Register Service Worker Manual untuk cegah 404
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./firebase-messaging-sw.js')
-            .then(reg => console.log("SW Registered"))
-            .catch(err => console.log("SW Error: ", err));
-        }
+    let activePage = document.querySelector(hash);
 
-        // Fungsi Daftar
-        window.setupFCM = async () => {
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission !== 'granted') return alert("Izin notif ditolak!");
+    if(activePage){
+        activePage.classList.add("active");
+    }
+}
 
-                const token = await getToken(messaging, { 
-                    vapidKey: 'hUR8IbEahVd7KHFec-tPlTzf36cmCm75L9mNK0L0NDM' 
-                });
-                
-                if (token) {
-                    myToken = token;
-                    localStorage.setItem('my_token', token);
-                    
-                    const name = navigator.userAgent.match(/(Samsung|Infinix|Xiaomi|Android|iPhone|Windows)/i)?.[0] || "Device";
-                    const finalName = name + "_" + Math.floor(Math.random()*999);
+window.addEventListener("hashchange", showPage);
+window.addEventListener("load", showPage);
+</script>
 
-                    await setDoc(doc(db, "devices", token), {
-                        name: finalName,
-                        token: token,
-                        lastSeen: serverTimestamp()
-                    });
-                    alert("Terdaftar sebagai: " + finalName);
-                    location.reload();
-                }
-            } catch (e) { console.error(e); }
-        };
-
-        // Listen Devices
-        onSnapshot(collection(db, "devices"), (snap) => {
-            const list = document.getElementById('deviceList');
-            list.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                const isMe = d.token === myToken;
-                list.innerHTML += `
-                    <div onclick="window.setTarget('${d.token}', '${d.name}')" 
-                         class="p-3 rounded-xl cursor-pointer transition-all border-l-4 mb-2 ${isMe ? 'bg-emerald-900/30 border-emerald-500' : 'bg-slate-700/50 border-blue-500 hover:bg-slate-600'}">
-                        <p class="font-bold text-sm">${d.name} ${isMe ? '(SAYA)' : ''}</p>
-                        <p class="text-[10px] opacity-50">Online</p>
-                    </div>`;
-            });
-        });
-
-        window.setTarget = (token, name) => {
-            targetToken = token;
-            document.getElementById('targetTitle').innerText = "Pesan ke: " + name;
-            document.getElementById('targetStatus').innerText = "Mode: Chat Privat";
-        };
-
-        window.resetTarget = () => {
-            targetToken = "global";
-            document.getElementById('targetTitle').innerText = "Global Chat";
-            document.getElementById('targetStatus').innerText = "Mode: Chat Umum";
-        };
-
-        // Kirim Pesan
-        window.sendMessage = async () => {
-            const txt = document.getElementById('msgInput').value;
-            if(!txt || !myToken) return alert("Daftar dulu/Pesan kosong!");
-
-            await addDoc(collection(db, "messages"), {
-                text: txt,
-                sender: myToken,
-                target: targetToken,
-                icon: selectedIcon,
-                timestamp: serverTimestamp()
-            });
-            document.getElementById('msgInput').value = "";
-        };
-
-        // Listen Messages & Fix "Anda" vs "Pengirim"
-        const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
-        onSnapshot(q, (snap) => {
-            const box = document.getElementById('chatBox');
-            box.innerHTML = "";
-            snap.forEach(doc => {
-                const m = doc.data();
-                const isMe = m.sender === myToken;
-                
-                // Filter: Tampilkan jika Global atau untuk saya atau dari saya
-                if(m.target === "global" || m.target === myToken || isMe) {
-                    const div = document.createElement('div');
-                    div.className = `flex mb-3 ${isMe ? 'justify-end' : 'justify-start'}`;
-                    div.innerHTML = `
-                        <div class="${isMe ? 'bg-emerald-600' : 'bg-slate-700'} p-3 rounded-2xl max-w-[85%] shadow-lg">
-                            <div class="flex items-center gap-2 mb-1 border-b border-white/10 pb-1">
-                                <img src="${m.icon}" class="w-4 h-4">
-                                <span class="text-[9px] font-black uppercase">${isMe ? 'SAYA' : 'PENGIRIM'}</span>
-                            </div>
-                            <p class="text-sm pt-1">${m.text}</p>
-                        </div>`;
-                    box.appendChild(div);
-
-                    // Bunyi & Notif jika pesan dari orang lain
-                    if(!isMe && m.timestamp) {
-                        audio.play().catch(()=>{});
-                        if (m.target === myToken) {
-                            new Notification("Pesan Privat!", { body: m.text, icon: m.icon });
-                        }
-                    }
-                }
-            });
-            box.scrollTop = box.scrollHeight;
-        });
-
-    </script>
 </body>
 </html>
