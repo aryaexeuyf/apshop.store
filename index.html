@@ -1,112 +1,390 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APSHOP STORE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP SHOP | Toko Elektronik Terpercaya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Open Graph untuk Preview Media Sosial (WA/FB) -->
+    <meta property="og:title" content="AP SHOP - Produk Elektronik Berkualitas">
+    <meta property="og:description" content="Dapatkan Blender dan peralatan rumah tangga terbaik hanya di AP SHOP.">
+    <meta property="og:image" content="https://placehold.co/600x400/2563eb/ffffff?text=AP+SHOP+Premium">
+    <meta property="og:type" content="website">
 
-<style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:#111;
-    color:white;
-}
-
-nav{
-    background:#00ff88;
-    padding:15px;
-    text-align:center;
-}
-
-nav a{
-    color:black;
-    text-decoration:none;
-    margin:10px;
-    font-weight:bold;
-}
-
-.page{
-    display:none;
-    padding:40px;
-    text-align:center;
-}
-
-.active{
-    display:block;
-}
-
-.box{
-    background:#1e1e1e;
-    padding:20px;
-    border-radius:15px;
-    max-width:500px;
-    margin:auto;
-}
-</style>
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .product-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-900">
 
-<nav>
-    <a href="#home">Home</a>
-    <a href="#produk">Produk</a>
-    <a href="#tentang">Tentang</a>
-    <a href="#kontak">Kontak</a>
-</nav>
+    <nav class="glass-nav sticky top-0 z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('home')">
+                    <div class="bg-blue-600 p-2 rounded-lg text-white">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tight text-blue-600 uppercase">AP<span class="text-gray-800">Shop</span></span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                    <a href="#" class="hover:text-blue-600 transition">Beranda</a>
+                    <a href="#kategori" class="hover:text-blue-600 transition">Kategori</a>
+                    <a href="#promo" class="hover:text-blue-600 transition">Promo</a>
+                </div>
 
-<!-- HOME -->
-<div id="home" class="page">
-    <div class="box">
-        <h1>🛒 APSHOP STORE</h1>
-        <p>Toko gadget random paling gacor jancok 😹</p>
-    </div>
-</div>
+                <div class="flex items-center gap-4">
+                    <button class="relative p-2 text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-search text-lg"></i>
+                    </button>
+                    <button class="relative p-2 text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-cart-shopping text-lg"></i>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-[10px] px-1.5 rounded-full">3</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-<!-- PRODUK -->
-<div id="produk" class="page">
-    <div class="box">
-        <h1>📦 Produk</h1>
-        <p>🔦 Senter LED - 20rb</p>
-        <p>🔊 Speaker Mini - 35rb</p>
-        <p>📱 Kabel Type C - 10rb</p>
-    </div>
-</div>
+    <!-- Main Content Container -->
+    <main id="app-content" class="min-h-screen">
+        <!-- Content will be injected here by JS -->
+    </main>
 
-<!-- TENTANG -->
-<div id="tentang" class="page">
-    <div class="box">
-        <h1>👤 Tentang</h1>
-        <p>APSHOP yaiku toko online isi elektronik, gadget, dll.</p>
-    </div>
-</div>
+    <footer class="bg-gray-900 text-gray-400 py-12 px-4 mt-20">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="col-span-1 md:col-span-2">
+                <span class="text-2xl font-bold text-white mb-4 block">AP SHOP</span>
+                <p class="max-w-xs">Destinasi utama belanja peralatan rumah tangga digital dengan sistem share terbaik di Indonesia.</p>
+                <div class="flex gap-4 mt-6">
+                    <a href="#" class="hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4">Layanan</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white">Bantuan Pelanggan</a></li>
+                    <li><a href="#" class="hover:text-white">Pengiriman</a></li>
+                    <li><a href="#" class="hover:text-white">Pengembalian</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4">Informasi</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white">Tentang Kami</a></li>
+                    <li><a href="#" class="hover:text-white">Syarat & Ketentuan</a></li>
+                    <li><a href="#" class="hover:text-white">Privasi</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-gray-800 mt-12 pt-8 text-center text-xs">
+            &copy; 2024 AP Shop Store - Project AryaExe. All rights reserved.
+        </div>
+    </footer>
 
-<!-- KONTAK -->
-<div id="kontak" class="page">
-    <div class="box">
-        <h1>📞 Kontak</h1>
-        <p>WA: 08xxxxxxxx</p>
-        <p>TikTok: APSHOP</p>
-    </div>
-</div>
+    <script>
+        // Data Produk Mockup
+        const products = [
+            {
+                id: "BL-001",
+                name: "Blender Turbo Pro X-200",
+                category: "Dapur",
+                price: 450000,
+                discountPrice: 385000,
+                rating: 4.8,
+                sold: 1200,
+                description: "Blender dengan mata pisau titanium berkekuatan tinggi. Mampu menghancurkan es batu dalam hitungan detik. Dilengkapi dengan 5 level kecepatan.",
+                image: "https://placehold.co/600x600/f3f4f6/1e40af?text=Blender+Turbo+Pro",
+                specs: ["Motor 500W", "Gelas Kaca 2L", "Pisau Stainless", "Garansi 2 Tahun"]
+            },
+            {
+                id: "BL-002",
+                name: "Mini Portable Juicer",
+                category: "Portable",
+                price: 250000,
+                discountPrice: 199000,
+                rating: 4.9,
+                sold: 3500,
+                description: "Praktis dibawa kemana saja. Baterai tahan lama dengan pengisian USB Type-C. Cocok untuk Anda yang suka berolahraga.",
+                image: "https://placehold.co/600x600/f3f4f6/db2777?text=Portable+Juicer",
+                specs: ["USB Rechargeable", "Botol BPA Free", "Anti Bocor", "Auto-Clean"]
+            },
+            {
+                id: "MX-001",
+                name: "Professional Stand Mixer",
+                category: "Dapur",
+                price: 1500000,
+                discountPrice: 1250000,
+                rating: 4.7,
+                sold: 450,
+                description: "Mixer berdiri profesional untuk pembuatan roti dan kue dalam jumlah banyak. Sangat stabil dan tidak berisik.",
+                image: "https://placehold.co/600x600/f3f4f6/059669?text=Stand+Mixer",
+                specs: ["7 Speed Control", "Mangkuk 5L", "Body Die-cast", "3 Jenis Pengocok"]
+            },
+            {
+                id: "RC-001",
+                name: "Smart Digital Rice Cooker",
+                category: "Elektronik",
+                price: 850000,
+                discountPrice: 720000,
+                rating: 5.0,
+                sold: 800,
+                description: "Memasak nasi lebih sehat dengan teknologi Low Sugar. Dilengkapi 10 menu otomatis untuk memasak sup hingga kue.",
+                image: "https://placehold.co/600x600/f3f4f6/4f46e5?text=Smart+Rice+Cooker",
+                specs: ["Digital Display", "Low Carbo Mode", "Wadah Ceramic", "Keep Warm 24H"]
+            }
+        ];
 
-<script>
-function showPage() {
-    let hash = window.location.hash || "#home";
+        const app = document.getElementById('app-content');
 
-    document.querySelectorAll(".page").forEach(page=>{
-        page.classList.remove("active");
-    });
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
+        }
 
-    let activePage = document.querySelector(hash);
+        function navigateTo(page, productId = null) {
+            window.scrollTo(0, 0);
+            if (productId) {
+                window.location.hash = `product-${productId}`;
+                renderProductDetail(productId);
+            } else {
+                window.location.hash = 'home';
+                renderHome();
+            }
+        }
 
-    if(activePage){
-        activePage.classList.add("active");
-    }
-}
+        function renderHome() {
+            let productCards = products.map(p => `
+                <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer" onclick="navigateTo('detail', '${p.id}')">
+                    <div class="relative overflow-hidden aspect-square">
+                        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase">Hemat ${Math.round((p.price-p.discountPrice)/p.price * 100)}%</div>
+                    </div>
+                    <div class="p-4 text-center sm:text-left">
+                        <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">${p.category}</p>
+                        <h3 class="font-semibold text-gray-800 line-clamp-1 mb-2">${p.name}</h3>
+                        <div class="flex items-center justify-center sm:justify-start gap-1 text-yellow-400 text-xs mb-2">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="text-gray-600 font-medium">${p.rating}</span>
+                            <span class="text-gray-400 mx-1">|</span>
+                            <span class="text-gray-400">Terjual ${p.sold}</span>
+                        </div>
+                        <div class="mb-4">
+                            <p class="text-xs text-gray-400 line-through">${formatRupiah(p.price)}</p>
+                            <p class="text-lg font-bold text-blue-600">${formatRupiah(p.discountPrice)}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 bg-blue-600 text-white text-sm py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Detail</button>
+                            <button onclick="event.stopPropagation(); shareProduct('${p.id}')" class="p-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
 
-window.addEventListener("hashchange", showPage);
-window.addEventListener("load", showPage);
-</script>
+            app.innerHTML = `
+                <!-- Hero Section -->
+                <section class="bg-gradient-to-br from-blue-600 to-indigo-800 py-16 px-4 mb-12">
+                    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between text-white">
+                        <div class="md:w-1/2 space-y-6 text-center md:text-left mb-10 md:mb-0">
+                            <span class="bg-blue-400/30 text-blue-100 px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-widest">New Season Sale</span>
+                            <h1 class="text-4xl md:text-6xl font-bold leading-tight">Dapur Modern, Hidup Lebih Mudah</h1>
+                            <p class="text-lg text-blue-100 opacity-90">Nikmati diskon hingga 40% untuk semua jenis Blender & Kitchen Appliance premium.</p>
+                            <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                                <a href="#products" class="bg-white text-blue-600 px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">Belanja Sekarang</a>
+                                <a href="#" class="bg-blue-500/20 border border-blue-300 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-500/40 transition">Lihat Promo</a>
+                            </div>
+                        </div>
+                        <div class="md:w-2/5 flex justify-center">
+                            <div class="relative">
+                                <img src="${products[0].image}" alt="Hero Image" class="w-72 h-72 object-cover rounded-3xl rotate-3 shadow-2xl border-8 border-white/10">
+                                <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl text-gray-800 flex items-center gap-3">
+                                    <div class="bg-green-100 p-2 rounded-full"><i class="fas fa-check text-green-600"></i></div>
+                                    <div>
+                                        <p class="text-[10px] text-gray-500 uppercase font-bold">Terlaris Hari Ini</p>
+                                        <p class="font-bold">Blender Turbo Pro</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Products Grid -->
+                <section id="products" class="max-w-7xl mx-auto px-4 pb-20">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 uppercase tracking-tight">Katalog Produk</h2>
+                            <p class="text-gray-500 text-sm">Peralatan berkualitas untuk kenyamanan Anda.</p>
+                        </div>
+                        <div class="hidden sm:flex gap-2">
+                            <button class="p-2 border rounded-full hover:bg-gray-100"><i class="fas fa-chevron-left"></i></button>
+                            <button class="p-2 border rounded-full hover:bg-gray-100"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                        ${productCards}
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderProductDetail(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return renderHome();
+
+            app.innerHTML = `
+                <section class="max-w-7xl mx-auto px-4 py-8 md:py-16">
+                    <nav class="flex text-sm text-gray-500 mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar">
+                        <a href="#" class="hover:text-blue-600">Home</a>
+                        <span class="mx-2">/</span>
+                        <a href="#" class="hover:text-blue-600">${product.category}</a>
+                        <span class="mx-2">/</span>
+                        <span class="text-gray-800 font-medium">${product.name}</span>
+                    </nav>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <!-- Left: Image -->
+                        <div class="space-y-4">
+                            <div class="bg-white rounded-3xl overflow-hidden shadow-md">
+                                <img src="${product.image}" class="w-full aspect-square object-cover" id="main-image">
+                            </div>
+                            <div class="grid grid-cols-4 gap-4">
+                                <button class="border-2 border-blue-600 rounded-xl overflow-hidden"><img src="${product.image}" class="w-full opacity-50"></button>
+                                <button class="border-2 border-transparent rounded-xl overflow-hidden hover:border-blue-600 transition"><img src="https://placehold.co/150x150?text=Side+1" class="w-full"></button>
+                                <button class="border-2 border-transparent rounded-xl overflow-hidden hover:border-blue-600 transition"><img src="https://placehold.co/150x150?text=Side+2" class="w-full"></button>
+                                <button class="border-2 border-transparent rounded-xl overflow-hidden hover:border-blue-600 transition"><img src="https://placehold.co/150x150?text=Usage" class="w-full"></button>
+                            </div>
+                        </div>
+
+                        <!-- Right: Info -->
+                        <div class="flex flex-col">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">${product.name}</h1>
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="text-gray-500 text-sm font-medium">(${product.rating})</span>
+                                <span class="text-gray-400">|</span>
+                                <span class="text-gray-500 text-sm font-medium">${product.sold} Terjual</span>
+                            </div>
+
+                            <div class="bg-blue-50 p-6 rounded-2xl mb-8">
+                                <p class="text-sm text-gray-500 line-through font-medium">${formatRupiah(product.price)}</p>
+                                <div class="flex items-center gap-4">
+                                    <p class="text-4xl font-extrabold text-blue-600">${formatRupiah(product.discountPrice)}</p>
+                                    <span class="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">HEMAT ${formatRupiah(product.price - product.discountPrice)}</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-6 mb-10">
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-2">Deskripsi Produk</h4>
+                                    <p class="text-gray-600 leading-relaxed">${product.description}</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-2">Spesifikasi</h4>
+                                    <ul class="grid grid-cols-2 gap-y-2">
+                                        ${product.specs.map(s => `<li class="text-gray-600 text-sm flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i> ${s}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <button onclick="buyNow('${product.id}')" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:bg-blue-700 hover:shadow-xl transition active:scale-95">Beli Sekarang</button>
+                                <button onclick="shareProduct('${product.id}')" class="bg-green-500 text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:bg-green-600 hover:shadow-xl transition flex items-center justify-center gap-2 active:scale-95">
+                                    <i class="fab fa-whatsapp text-xl"></i> Share ke WA
+                                </button>
+                            </div>
+                            <p class="text-center text-xs text-gray-400 mt-4"><i class="fas fa-shield-alt mr-1"></i> Garansi Resmi & Pembayaran Aman</p>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function shareProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            // Membuat URL unik berdasarkan host saat ini
+            const productUrl = `${window.location.origin}${window.location.pathname}#product-${product.id}`;
+            
+            // Format Teks Iklan WA yang Menarik
+            const message = 
+`🔥 *PROMO TERBATAS DI AP SHOP!* 🔥
+
+*${product.name}*
+Harga: ~${formatRupiah(product.price)}~
+Harga Promo: *${formatRupiah(product.discountPrice)}* ✅
+
+✨ ${product.description.substring(0, 80)}...
+
+Beli Sekarang Sebelum Kehabisan:
+👉 ${productUrl}
+
+_Belanja Aman & Cepat hanya di AP Shop!_`;
+
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+        }
+
+        function buyNow(id) {
+            const product = products.find(p => p.id === id);
+            const overlay = document.createElement('div');
+            overlay.className = "fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm";
+            overlay.innerHTML = `
+                <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl scale-110 animate-in fade-in zoom-in duration-300">
+                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-check text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Simulasi Pesanan</h3>
+                    <p class="text-gray-600 mb-6">Kamu memilih <strong>${product.name}</strong> seharga ${formatRupiah(product.discountPrice)}. Lanjutkan ke WhatsApp untuk konfirmasi alamat?</p>
+                    <div class="flex flex-col gap-3">
+                        <button onclick="confirmOrder('${product.id}')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Ya, Lanjutkan</button>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-bold">Batal</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function confirmOrder(id) {
+            const product = products.find(p => p.id === id);
+            const msg = `Halo Admin AP SHOP, Saya ingin memesan produk:\n\nNama Produk: ${product.name}\nID: ${product.id}\nHarga: ${formatRupiah(product.discountPrice)}\n\nMohon informasi ongkir ke alamat saya.`;
+            window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(msg)}`, '_blank');
+            document.querySelector('.fixed.inset-0').remove();
+        }
+
+        function init() {
+            const hash = window.location.hash;
+            if (hash.startsWith('#product-')) {
+                const id = hash.replace('#product-', '');
+                renderProductDetail(id);
+            } else {
+                renderHome();
+            }
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('hashchange', init);
+        
+        // Initial load
+        window.onload = init;
+    </script>
 
 </body>
 </html>
